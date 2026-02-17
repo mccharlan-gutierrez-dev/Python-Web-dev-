@@ -1,0 +1,116 @@
+from flask import Flask, render_template, request, url_for, flash, redirect, session, make_response
+# session for make_response for cookies add to flask library
+import sqlite3
+
+app = Flask (__name__)
+
+# app.secret_key = b'NeverGonnaLetUGo'
+
+# def initDB():
+#     connection = sqlite3.connect("database.db")
+#     _cursor = connection.cursor()
+#     _cursor.execute("""CREATE TABLE IF NOT EXISTS Employee (id integer primary key autoincrement, name text, age integer, salary real)""")
+#     _cursor.close()
+#     connection.commit()
+#     connection.close()
+
+# @app.route('/')
+# def index():
+#     return render_template("index.html")
+
+# @app.post('/add-record')
+# def add():
+#     initDB()
+#     try:
+#         name = request.form['textName']
+#         age = request.form['textAge']
+#         salary = request.form['textSalary']
+#         connection = sqlite3.connect("database.db")
+#         _cursor = connection.cursor()
+#         _cursor.execute("INSERT INTO Employee (name, age, salary) values (?,?,?)",(name, age, salary))
+#         connection.commit()
+#         connection.close()
+#     except:
+#        return render_template('failed.html')
+    
+#     return render_template('success.html')
+
+# @app.route('/display')
+# def display():
+#     connection = sqlite3.connect("database.db")
+#     _cursor = connection.cursor()
+#     records = connection.execute("SELECT id, name, age, salary from Employee").fetchall()
+#     connection.close()
+
+#     return render_template('display.html', data=records)
+
+# secret key
+app.secret_key = b'NeverGonnaLetUGo'
+
+# session
+# @app.route('/')
+# def index():
+#    if 'userName' in session:
+#     #   if u want to add rendered template
+#     #   html = f"logged in as {session["userName"]} <a href ='/logout'>logout</a>"
+#     #   html += render_template("success.html")
+#     #   return html
+#       return f"logged in as {session["userName"]} <a href ='/logout'>logout</a>"
+#    return "You are not logged in <a href = '/login'>login</a>"
+
+@app.route('/login', methods=['GET', 'POST'])
+def login():
+   if request.method == 'POST':
+      session['userName'] = request.form['userName']
+      return redirect(url_for('index'))
+#    this is the direct form and it can also use a render_template 
+   return'''
+        <form method = "post">
+            <p><input type = text name = userName>
+            <p><input type = submit value = Login>
+        
+        </form>
+
+
+'''
+
+@app.route('/logout')
+def logout():
+   
+   session.pop('userName', None)
+   return redirect(url_for('index'))
+
+#cookies
+@app.route('/')
+def index():
+   name = "okay"
+   response = make_response("Cookies set for: " + name)
+   response.set_cookie('userName', name )
+   return response
+
+@app.route('/seecookies')
+def seecookies():
+   return request.cookies.get('userName')
+
+@app.route('/delete-cookies')
+def delete_cookies():
+#    response
+   response = make_response("Cookie deleted")
+#    delete
+   response.delete_cookie("userName")
+
+   return response
+
+
+    
+
+if __name__ == '__main__':
+   app.run(debug=True)
+
+
+       
+
+        
+
+        
+
